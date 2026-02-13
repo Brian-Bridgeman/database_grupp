@@ -1,0 +1,15 @@
+D:\GitHub\database_grupp\CreditCardSystem\bin\Debug\net9.0\CreditCardSystem.exe
+D:\GitHub\database_grupp\CreditCardSystem\bin\Debug\net9.0\CreditCardSystem.deps.json
+D:\GitHub\database_grupp\CreditCardSystem\bin\Debug\net9.0\CreditCardSystem.runtimeconfig.json
+D:\GitHub\database_grupp\CreditCardSystem\bin\Debug\net9.0\CreditCardSystem.dll
+D:\GitHub\database_grupp\CreditCardSystem\bin\Debug\net9.0\CreditCardSystem.pdb
+D:\GitHub\database_grupp\CreditCardSystem\obj\Debug\net9.0\CreditCardSystem.GeneratedMSBuildEditorConfig.editorconfig
+D:\GitHub\database_grupp\CreditCardSystem\obj\Debug\net9.0\CreditCardSystem.AssemblyInfoInputs.cache
+D:\GitHub\database_grupp\CreditCardSystem\obj\Debug\net9.0\CreditCardSystem.AssemblyInfo.cs
+D:\GitHub\database_grupp\CreditCardSystem\obj\Debug\net9.0\CreditCardSystem.csproj.CoreCompileInputs.cache
+D:\GitHub\database_grupp\CreditCardSystem\obj\Debug\net9.0\CreditCardSystem.sourcelink.json
+D:\GitHub\database_grupp\CreditCardSystem\obj\Debug\net9.0\CreditCardSystem.dll
+D:\GitHub\database_grupp\CreditCardSystem\obj\Debug\net9.0\refint\CreditCardSystem.dll
+D:\GitHub\database_grupp\CreditCardSystem\obj\Debug\net9.0\CreditCardSystem.pdb
+D:\GitHub\database_grupp\CreditCardSystem\obj\Debug\net9.0\CreditCardSystem.genruntimeconfig.cache
+D:\GitHub\database_grupp\CreditCardSystem\obj\Debug\net9.0\ref\CreditCardSystem.dll
