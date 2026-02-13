@@ -19,13 +19,13 @@ class Program
         command.CommandText =
         @"
         CREATE TABLE IF NOT EXISTS persons (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id INTEGER PRIMARY KEY,
             first_name TEXT NOT NULL,
             last_name TEXT NOT NULL
         );
 
         CREATE TABLE IF NOT EXISTS mock_data (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id INTEGER PRIMARY KEY,
             first_name TEXT,
             last_name TEXT
         );
@@ -150,28 +150,40 @@ class Program
         using var connection = new SqliteConnection(connectionString);
         connection.Open();
 
+        var pragma = connection.CreateCommand();
+        pragma.CommandText = @"
+            PRAGMA journal_mode = OFF;
+            PRAGMA synchronous = OFF;
+            PRAGMA temp_store = MEMORY;
+            PRAGMA cache_size = 1000000;
+        ";
+        pragma.ExecuteNonQuery();
+
         using var transaction = connection.BeginTransaction();
 
         var command = connection.CreateCommand();
-            command.CommandText =
-            @"
+        command.CommandText =
+        @"
             INSERT INTO persons (first_name, last_name)
             VALUES ($first, $last);
-            "; 
-        var FirstParam = command.CreateParameter();
-        FirstParam.ParameterName = "$first";
-        command.Parameters.Add(FirstParam);
-        var LastParam = command.CreateParameter();
-        LastParam.ParameterName = "$last";
-        command.Parameters.Add(LastParam);       
+        ";
+
+        var firstParam = command.CreateParameter();
+        firstParam.ParameterName = "$first";
+        command.Parameters.Add(firstParam);
+
+        var lastParam = command.CreateParameter();
+        lastParam.ParameterName = "$last";
+        command.Parameters.Add(lastParam);
 
         for (int i = 0; i < amount; i++)
         {
-            FirstParam.Value = firstNames[random.Next(firstNames.Count)];
-            LastParam.Value = lastNames[random.Next(lastNames.Count)];
+            firstParam.Value = firstNames[random.Next(firstNames.Count)];
+            lastParam.Value = lastNames[random.Next(lastNames.Count)];
 
             command.ExecuteNonQuery();
         }
+
         transaction.Commit();
 
         Console.WriteLine($"{amount} persons generated!");

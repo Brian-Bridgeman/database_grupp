@@ -25,8 +25,14 @@ option 1: 0.43 seconds
 Option 2:
 - 200 000 st = 1.14 seconds
 
------------------------
+----------------------- testa tio miljoner
 option 1 timer : 0.24 seconds
 
 option 2 timer and amount:
-- 10000000 st = 44.41 seconds 
+- 10 000 000 st = 44.41 seconds 
+
+----------------------
+option 1 timer : 0.20 seconds
+
+option 2 timer and amount:
+- 10000000 st = 25.74 seconds   
