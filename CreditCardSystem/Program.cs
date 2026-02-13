@@ -70,14 +70,13 @@ class Program
         }
 
         var random = new Random();
-        int batchSize = 1000;
+        int batchSize = 100;
         var sb = new StringBuilder();
-        int count = 0;
+        int batchCount = 0;
 
         foreach (var personId in personIds)
         {
             int numCards;
-
             double p = random.NextDouble();
             if (p < 0.7) numCards = 1;
             else if (p < 0.9) numCards = 2;
@@ -85,28 +84,30 @@ class Program
 
             for (int c = 0; c < numCards; c++)
             {
-                string cardNumber = GenerateFakeCardNumber(random);
-                sb.Append($"({personId}, '{cardNumber}')");
+                string cardNumber = GenerateFakeCardNumber(random).Replace("'", "''");
 
-                if (++count % batchSize == 0)
-                {
-                    var insertCmd = connection.CreateCommand();
-                    insertCmd.CommandText = "INSERT INTO credit_cards (person_id, card_number) VALUES " + sb.ToString() + ";";
-                    insertCmd.ExecuteNonQuery();
-                    sb.Clear();
-                }
-                else
-                {
+                if (sb.Length > 0)
                     sb.Append(",");
+
+                sb.Append($"({personId}, '{cardNumber}')");
+                batchCount++;
+
+                if (batchCount >= batchSize)
+                {
+                    var cmd = connection.CreateCommand();
+                    cmd.CommandText = "INSERT INTO credit_cards (person_id, card_number) VALUES " + sb.ToString() + ";";
+                    cmd.ExecuteNonQuery();
+                    sb.Clear();
+                    batchCount = 0;
                 }
             }
         }
 
         if (sb.Length > 0)
         {
-            var insertCmd = connection.CreateCommand();
-            insertCmd.CommandText = "INSERT INTO credit_cards (person_id, card_number) VALUES " + sb.ToString() + ";";
-            insertCmd.ExecuteNonQuery();
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = "INSERT INTO credit_cards (person_id, card_number) VALUES " + sb.ToString() + ";";
+            cmd.ExecuteNonQuery();
         }
 
         transaction.Commit();
