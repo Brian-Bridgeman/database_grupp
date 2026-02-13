@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using System.Diagnostics;
 
 class Program
 {
@@ -69,18 +70,29 @@ class Program
             Console.WriteLine("mockdata.sql not found!");
             return;
         }
+        var stopwatch = Stopwatch.StartNew();
 
         using var connection = new SqliteConnection(connectionString);
         connection.Open();
 
-        string sql = File.ReadAllText("mockdata.sql");
+        using var transaction = connection.BeginTransaction();
 
-        var command = connection.CreateCommand();
-        command.CommandText = sql;
+        string[] lines = File.ReadAllLines("mockdata.sql");
 
-        command.ExecuteNonQuery();
+        int count = 0;
 
-        Console.WriteLine("Mock data imported successfully!");
+        foreach (var line in lines)
+        {
+            var command = connection.CreateCommand();
+            command.CommandText = line;
+            command.ExecuteNonQuery();
+            count++;
+        }
+        transaction.Commit();
+        stopwatch.Stop();
+
+        Console.WriteLine($"Imported {count} rows.");
+        Console.WriteLine($"Time taken: {stopwatch.Elapsed.TotalSeconds:F2} seconds");
     }
 
     static (List<string>, List<string>) LoadNames()
@@ -107,10 +119,11 @@ class Program
 
     static void GeneratePersonsMenu()
     {
-        Console.Write("How many persons? (default 100000): ");
+        Console.Write("How many persons? (default 10 000 000): ");
         var input = Console.ReadLine();
 
-        int amount = 100000;
+        int amount = 10000000;
+        var stopwatch = Stopwatch.StartNew();
 
         if (!string.IsNullOrWhiteSpace(input))
         {
@@ -118,6 +131,8 @@ class Program
         }
 
         GeneratePersons(amount);
+        stopwatch.Stop();
+        Console.WriteLine($"Time taken: {stopwatch.Elapsed.TotalSeconds:F2} seconds");
     }
 
     static void GeneratePersons(int amount)
@@ -135,23 +150,29 @@ class Program
         using var connection = new SqliteConnection(connectionString);
         connection.Open();
 
-        for (int i = 0; i < amount; i++)
-        {
-            string first = firstNames[random.Next(firstNames.Count)];
-            string last = lastNames[random.Next(lastNames.Count)];
+        using var transaction = connection.BeginTransaction();
 
-            var command = connection.CreateCommand();
+        var command = connection.CreateCommand();
             command.CommandText =
             @"
             INSERT INTO persons (first_name, last_name)
             VALUES ($first, $last);
-            ";
+            "; 
+        var FirstParam = command.CreateParameter();
+        FirstParam.ParameterName = "$first";
+        command.Parameters.Add(FirstParam);
+        var LastParam = command.CreateParameter();
+        LastParam.ParameterName = "$last";
+        command.Parameters.Add(LastParam);       
 
-            command.Parameters.AddWithValue("$first", first);
-            command.Parameters.AddWithValue("$last", last);
+        for (int i = 0; i < amount; i++)
+        {
+            FirstParam.Value = firstNames[random.Next(firstNames.Count)];
+            LastParam.Value = lastNames[random.Next(lastNames.Count)];
 
             command.ExecuteNonQuery();
         }
+        transaction.Commit();
 
         Console.WriteLine($"{amount} persons generated!");
     }
