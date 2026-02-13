@@ -1,5 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using System.Diagnostics;
+using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 class Program
@@ -159,6 +161,7 @@ class Program
             Console.WriteLine("2. Generate persons");
             Console.WriteLine("3. Generate credit cards");
             Console.WriteLine("4. Show sample persons with cards");
+            Console.WriteLine("5. Search card by name");
             Console.WriteLine("0. Exit");
             Console.Write("Choice: ");
 
@@ -177,6 +180,9 @@ class Program
                     break;
                 case "4":
                     ShowPersonsWithCards();
+                    break;
+                case "5":
+                    SearchCardsByName();
                     break;
                 case "0":
                     return;
@@ -257,6 +263,40 @@ class Program
         GeneratePersons(amount);
         stopwatch.Stop();
         Console.WriteLine($"Time taken: {stopwatch.Elapsed.TotalSeconds:F2} seconds");
+    }
+
+    static void SearchCardsByName()
+    {
+        using var connection = new SqliteConnection(connectionString);
+        connection.Open();
+
+        Console.Write("Enter First Name");
+        var firstName = Console.ReadLine( );
+        Console.Write("Enter Last Name");
+        var lastName = Console.ReadLine( );
+
+        var command = connection.CreateCommand();
+        command.CommandText = @"
+            SELECT c.card_number
+            FROM persons p
+            JOIN credit_cards c ON p.id = c.person_id
+            WHERE p.first_name = $firstname AND p.last_name = $lastname;
+            ";
+        command.Parameters.AddWithValue("$firstname", firstName);
+        command.Parameters.AddWithValue("$lastname", lastName);
+
+        using var reader = command.ExecuteReader(); // no such such column
+        Console.WriteLine($"Credit cards for {firstName} {lastName}:");
+        bool hasCards = false;
+        while (reader.Read())
+        {
+            Console.WriteLine($"\t{reader.GetString(0)}");
+            hasCards = true;
+        }
+        if (!hasCards)
+        {
+            Console.WriteLine("\tNo cards found.");
+        }
     }
 
     static void GeneratePersons(int amount)
