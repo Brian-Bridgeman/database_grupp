@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using System.Diagnostics;
+using System.Text;
 
 class Program
 {
@@ -162,16 +163,10 @@ class Program
         using var transaction = connection.BeginTransaction();
 
         var command = connection.CreateCommand();
-        command.CommandText =
-        @"
-            INSERT INTO persons (first_name, last_name)
-            VALUES ($first, $last);
-        ";
-
+        command.CommandText = "INSERT INTO persons (first_name, last_name) VALUES ($first, $last);";
         var firstParam = command.CreateParameter();
         firstParam.ParameterName = "$first";
         command.Parameters.Add(firstParam);
-
         var lastParam = command.CreateParameter();
         lastParam.ParameterName = "$last";
         command.Parameters.Add(lastParam);
@@ -180,7 +175,6 @@ class Program
         {
             firstParam.Value = firstNames[random.Next(firstNames.Count)];
             lastParam.Value = lastNames[random.Next(lastNames.Count)];
-
             command.ExecuteNonQuery();
         }
 

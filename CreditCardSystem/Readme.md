@@ -36,3 +36,15 @@ option 1 timer : 0.20 seconds
 
 option 2 timer and amount:
 - 10000000 st = 25.74 seconds   
+
+
+------
+- 10000000 st = 15.09 seconds
+
+Time taken: 13.89 seconds
+Time taken: 13.42 seconds  
+Time taken: 12.96 seconds 
+
+
+------------- nyaste
+
